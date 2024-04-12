@@ -9,16 +9,39 @@
 
 	let selectionMade = false
 
+	let babyNames = []
+
+	const apiKey = '2LP0z26UuHCOic1ZWZ/x5w==7WiMg5Quumm85tl6'
+
+
+	async function getBabyNames() {
+		try {
+			const headers = new Headers()
+			headers.append('X-API-Key', apiKey)
+
+			const response = await fetch('https://api.api-ninjas.com/v1/babynames', {
+				method: 'GET',
+				headers: headers
+			})
+			const data = await response.json()
+			console.log(data)
+			babyNames = data
+			console.log(babyNames)
+		} catch(error) {
+			console.error('Error fetching baby names:', error.message)
+		}
+	}
+
 
 	function setFilterSettings() {
 		filterSettings = true
 	}
 
-	function showSettings() {
-		console.log(
-			lastName, babyNameType, popular
-		)
-	}
+	// function showSettings() {
+	// 	console.log(
+	// 		lastName, babyNameType, popular
+	// 	)
+	// }
 
 	function isSelectionMade() {
 		selectionMade = babyNameType !== ''
@@ -52,7 +75,7 @@
 				<p>Search by Popular Names?</p>
 			</label>
 
-			<button class="btn variant-soft-secondary" disabled={!selectionMade} on:click={showSettings}>Let's get some names!</button>
+			<button class="btn variant-soft-secondary" disabled={!selectionMade} on:click={getBabyNames}>Let's get some names!</button>
 
 		{/if}
 	</div>
