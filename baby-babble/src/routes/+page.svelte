@@ -43,24 +43,27 @@
 	}
 </script>
 
-<div class="card flex justify-center h-full items-center p-12">
-	<div class="space-y-5">
-		<h1 class="h1">BabyBabble</h1>
-		<p>Swipe names for the big day!</p>
+<div class="flex justify-center h-full items-center p-12">
+	<div class="card w-3/4 p-4 space-y-5 text-center my-auto">
+		<h1 class="h1 hover:animate-pulse">BabyBabble</h1>
+		<p class="italic">Swipe names for the big day!</p>
 
 		{#if initialSettings}
-			<h2>Let's start with your name (if you want)</h2>
+			<h2 class="text-2xl font-semibold">Let's start with your name (if you want)</h2>
 			<div>
 				<p>Your last name is: {lastName}</p>
-				<input bind:value={lastName} />
+				<input class='input w-1/2 my-4' bind:value={lastName} />
 			</div>
-			<button class="btn variant-filled" on:click={setFilterSettings}>Continue</button>
+			<button class="btn variant-filled hover:animate-pulse" on:click={setFilterSettings}>Continue</button>
 		{/if}
 		{#if filterSettings}
-			<label for="settings">What kind of names are you looking for?</label>
-			<select
+			<label class="text-2xl font-semibold" for="settings">What kind of names are you looking for?</label>
+			<select 
+				class='select w-1/2'
+				size='3'
 				name="settings"
 				id="settings"
+				placeholder="Select name type"
 				bind:value={babyNameType}
 				on:change={isSelectionMade}
 				required
@@ -70,12 +73,12 @@
 				<option value="neutral">Neutral Names</option>
 			</select>
 
-			<label for="popularNames" class="flex">
+			<label for="popularNames" class="flex justify-center">
 				<input class="checkbox mr-2" type="checkbox" bind:checked={popular} />
 				<p>Search by Popular Names?</p>
 			</label>
 
-			<button class="btn variant-soft-secondary" disabled={!selectionMade} on:click={getBabyNames}
+			<button class="btn variant-soft-secondary hover:animate-pulse" disabled={!selectionMade} on:click={getBabyNames}
 				>Let's get some names!</button
 			>
 		{/if}
