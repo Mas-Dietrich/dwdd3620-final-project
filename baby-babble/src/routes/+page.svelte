@@ -16,9 +16,15 @@
 
 	let babyNames = [];
 
+	let likedNames = [];
+
+	let currentBabyNameIndex = 0
+
 	let apiKey = '2LP0z26UuHCOic1ZWZ/x5w==7WiMg5Quumm85tl6';
 
 	let showCards = false
+
+	let showMoreNamesPrompt = false
 
 	async function getBabyNames() {
 		try {
@@ -59,6 +65,33 @@
 	function displayBabyNames() {
 		filterSettings = false
 		showCards = true
+	}
+
+	function handleLikedBabyNames() {
+		likedNames.push(babyNames[currentBabyNameIndex]);
+		console.log(likedNames)
+		nextName()
+	}
+
+	function nextName() {
+		if(currentBabyNameIndex < babyNames.length - 1) {
+			currentBabyNameIndex++
+		} else {
+			currentBabyNameIndex = 0
+			if (babyNames.length >= 10) {
+				showMoreNamesPrompt = true
+				showCards = false
+			}
+		}
+	}
+
+	function handleDislikedBabyNames() {
+		nextName()
+	}
+
+	async function loadMoreBabyNames() {
+		showMoreNamesPrompt = false
+		await getBabyNames()
 	}
 
 </script>
@@ -104,14 +137,23 @@
 		{/if}
 	</div>
 	<div class="flex justify-center flex-col w-3/4">
-		{#if displayBabyNames}
-			{#each babyNames as babyName}
+		{#if !initialSettings && !filterSettings && !showMoreNamesPrompt}
 				<div class="card p-8 hover:animate-pulse h-96 my-8 relative">
-					<h2 class="text-3xl font-bold text-center">{babyName} {lastName}</h2>
-					<Fa class="absolute left-5 bottom-[50%] text-red-600 text-xl" icon={faX} />
-					<Fa class="absolute bottom-[50%] right-5 text-green-600 text-xl" icon={faCheck} />
+					<h2 class="text-3xl font-bold text-center">{babyNames[currentBabyNameIndex]} {lastName}</h2>
+					<div class="absolute left-5 bottom-[50%] text-red-600 text-xl cursor-pointer" on:click={handleDislikedBabyNames}>
+						<Fa icon={faX}/>
+					</div>
+
+					<div class="absolute bottom-[50%] right-5 text-green-600 text-xl cursor-pointer" on:click={handleLikedBabyNames}>
+						<Fa icon={faCheck}/>
+					</div>
+
 				</div>
-			{/each}
 		{/if}
+		{#if showMoreNamesPrompt}
+		<div class="text-center my-4">
+			<button class="btn variant-filled hover:animate-pulse" on:click={loadMoreBabyNames}>See More Baby Names</button>
+		</div>
+	{/if}
 	</div>
 </div>
