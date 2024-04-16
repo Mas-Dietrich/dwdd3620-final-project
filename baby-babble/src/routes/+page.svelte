@@ -1,7 +1,4 @@
 <script>
-	import Fa from 'svelte-fa'
-	import {faCheck, faX} from '@fortawesome/free-solid-svg-icons'
-
 	let initialSettings = true
 
 	let lastName = '';
@@ -45,12 +42,41 @@
 		const data = await response.json()
 		babyNames = data
 		console.log(babyNames)
+		await getNameDefinition()
 		displayBabyNames()
 
 	} catch(error) {
 		console.error('Error fetching baby names:', error.message)
 	}
 }
+
+async function getNameDefinition() {
+	try {
+		for (let i=0; i < babyNames.length; i++) {
+			const name = babyNames[i];
+			const response = await fetch(`https://api.api-ninjas.com/v1/dictionary?word=${name}`,{
+				method: 'GET',
+				headers: {
+					'X-API-Key': apiKey
+				}
+			})
+			const data = await response.json();
+			if(data.definition) {
+				babyNames[i] = {
+					name: name,
+					definition: data.definition
+				}
+			} else {
+				babyNames[i] = {
+					name: name,
+					definition: "No name definition available"
+				}
+			}
+		}
+	} catch (error) {
+		console.error('Error fetching definitions:', error.message)
+	}	
+} 
 
 
 	function setFilterSettings() {
@@ -136,16 +162,18 @@
 			>
 		{/if}
 	</div>
+
 	<div class="flex justify-center flex-col w-3/4">
 		{#if !initialSettings && !filterSettings && !showMoreNamesPrompt}
-				<div class="card p-8 hover:animate-pulse h-96 my-8 relative">
-					<h2 class="text-3xl font-bold text-center">{babyNames[currentBabyNameIndex]} {lastName}</h2>
-					<div class="absolute left-5 bottom-[50%] text-red-600 text-xl cursor-pointer" on:click={handleDislikedBabyNames}>
-						<Fa icon={faX}/>
+				<div class="card p-8 hover:animate-pulse h-[500px] my-8 relative">
+					<h2 class="text-3xl font-bold text-center">{babyNames[currentBabyNameIndex].name} {lastName}</h2>
+					<p class="text-center my-4 italic w-3/4 mx-auto">{babyNames[currentBabyNameIndex].definition}</p>
+					<div class="absolute left-[5%] bottom-[50%] text-red-600 text-xl cursor-pointer">
+						<button class="btn" on:click={handleDislikedBabyNames}>X</button>
 					</div>
 
-					<div class="absolute bottom-[50%] right-5 text-green-600 text-xl cursor-pointer" on:click={handleLikedBabyNames}>
-						<Fa icon={faCheck}/>
+					<div class="absolute bottom-[50%] right-[5%] text-green-600 text-xl cursor-pointer">
+						<button class="btn"  on:click={handleLikedBabyNames}>✅</button>
 					</div>
 
 				</div>
