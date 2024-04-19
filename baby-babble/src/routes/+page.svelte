@@ -1,6 +1,7 @@
 <script>
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton'
 	import {icons} from '$lib/icons/icons.js'
+	import {ProgressBar} from '@skeletonlabs/skeleton';
 
 	let initialSettings = true
 
@@ -26,8 +27,11 @@
 
 	let showMoreNamesPrompt = false
 
+	let isLoading = false
+
 	async function getBabyNames() {
 		try {
+			isLoading = true // Set loading screen while API calls are made
 			const headers = new Headers();
 			headers.append('X-API-Key', apiKey)
 
@@ -50,6 +54,8 @@
 
 	} catch(error) {
 		console.error('Error fetching baby names:', error.message)
+	} finally {
+		isLoading = false
 	}
 }
 
@@ -174,6 +180,15 @@ async function getNameDefinition() {
 			>
 		{/if}
 	</div>
+
+	{#if isLoading}
+		<div class="w-3/4 mx-aut0 my-12 p-8 variant-ghost-primary rounded-full animate-bounce">
+			<h2 class="text-center text-3xl mb-8">Babies Names Being Babbled...</h2>
+			<div class="w-1/2 m-auto">
+				<ProgressBar value={undefined}/>
+			</div>
+		</div>
+	{/if}
 
 	<div class="flex justify-center flex-col w-3/4">
 		{#if !initialSettings && !filterSettings && !showMoreNamesPrompt}
