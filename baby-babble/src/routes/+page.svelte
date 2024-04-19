@@ -1,4 +1,7 @@
 <script>
+	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton'
+	import {icons} from '$lib/icons/icons.js'
+
 	let initialSettings = true
 
 	let lastName = '';
@@ -174,9 +177,38 @@ async function getNameDefinition() {
 
 	<div class="flex justify-center flex-col w-3/4">
 		{#if !initialSettings && !filterSettings && !showMoreNamesPrompt}
-				<div class="card p-8 hover:animate-pulse my-8 relative">
+				<div class="card p-8 my-8 relative">
 					<h2 class="text-3xl font-bold text-center">{babyNames[currentBabyNameIndex].name} {lastName}</h2>
-					<p class="text-center my-4 italic w-3/4 mx-auto">{babyNames[currentBabyNameIndex].definition}</p>
+					<div class="w-3/4 mx-auto my-4">
+						<Accordion>
+							<AccordionItem>
+								<svelte:fragment slot="lead">{@html icons.book}</svelte:fragment>
+								<svelte:fragment slot="summary">Definition</svelte:fragment>
+								<svelte:fragment slot="content">
+									<p class="my-4 italic w-3/4">{babyNames[currentBabyNameIndex].definition}</p>
+								</svelte:fragment>
+							</AccordionItem>
+							<AccordionItem>
+								<svelte:fragment slot="lead">{@html icons.camera}</svelte:fragment>
+								<svelte:fragment slot="summary">Celebrities With This Name</svelte:fragment>
+								<svelte:fragment slot="content">
+									{#if babyNames[currentBabyNameIndex].celebrities && babyNames[currentBabyNameIndex].celebrities.length > 0}
+										<h4 class="underline">Celebrities with this name:</h4>
+											<ol class="list flex flex-col">
+											{#each babyNames[currentBabyNameIndex].celebrities as celebrity, index}
+												<li>
+													<span>{index + 1}.</span>
+													<span class="flex-auto">{celebrity}</span>
+												</li>
+											{/each}
+											</ol>
+									{:else}
+											<p>No celebrity names available</p>
+									{/if}
+								</svelte:fragment>
+							</AccordionItem>
+						</Accordion>
+					</div>
 					<div class="absolute left-[5%] bottom-[50%] text-red-600 text-xl cursor-pointer">
 						<button class="btn" on:click={handleDislikedBabyNames}>X</button>
 					</div>
@@ -184,26 +216,6 @@ async function getNameDefinition() {
 					<div class="absolute bottom-[50%] right-[5%] text-green-600 text-xl cursor-pointer">
 						<button class="btn"  on:click={handleLikedBabyNames}>✅</button>
 					</div>
-
-					<div class="flex flex-col justify-center text-center">
-						{#if babyNames[currentBabyNameIndex].celebrities && babyNames[currentBabyNameIndex].celebrities.length > 0}
-						<h4 class="underline">Celebrities with this name:</h4>
-							<ol class="list flex flex-col justify-center text-center w-3/4 mx-auto my-4">
-							{#each babyNames[currentBabyNameIndex].celebrities as celebrity, index}
-								<li>
-									<span>{index + 1}.</span>
-									<span class="flex-auto">{celebrity}</span>
-								</li>
-							{/each}
-							</ol>
-					{:else}
-							<p>No celebrity names available</p>
-					{/if}
-
-					</div>
-
-
-
 				</div>
 		{/if}
 		{#if showMoreNamesPrompt}
