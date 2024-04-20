@@ -29,6 +29,15 @@
 
 	let isLoading = false
 
+	let likedNamesContainer = false
+
+
+	function displayLikedNames() {
+		
+		likedNamesContainer = true
+
+	}
+
 	async function getBabyNames() {
 		try {
 			isLoading = true // Set loading screen while API calls are made
@@ -236,7 +245,16 @@ async function getNameDefinition() {
 		{#if showMoreNamesPrompt}
 		<div class="text-center my-4">
 			<button class="btn variant-filled hover:animate-pulse" on:click={loadMoreBabyNames}>See More Baby Names</button>
+			<button class="btn variant-secondary hover:animate-pulse" on:click={displayLikedNames}>See Liked Baby Names</button>
 		</div>
+	{/if}
+
+	{#if likedNamesContainer}
+	<h2>Liked Baby Names:</h2>
+		{#each likedNames as likedName}
+			<li>{likedName.name}</li>
+		{/each}
+		
 	{/if}
 	</div>
 </div>

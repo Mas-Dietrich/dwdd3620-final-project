@@ -16,5 +16,4 @@
 	hljs.registerLanguage('typescript', typescript);
 	storeHighlightJs.set(hljs);
 </script>
-
 <slot />
