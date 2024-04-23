@@ -2,42 +2,62 @@
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton'
 	import {icons} from '$lib/icons/icons.js'
 	import {ProgressBar} from '@skeletonlabs/skeleton';
+	import { popup } from '@skeletonlabs/skeleton';
+	import { writable } from 'svelte/store';
 
+	//Create Popup instance
+	const popupFeatured = {
+		event: 'click',
+		target: 'popupFeatured',
+		placement: 'top'
+	}
+	
+	//Variable for start screen
 	let initialSettings = true
 
+	//Reactive last name element
 	let lastName = '';
 
+	//For next part of settings
 	let filterSettings = false;
 
+	//To be used for API settings for baby name types
 	let babyNameType = '';
 
+	//Is set for baby names API settings
 	let popular = false;
 
+	//More settings for UI
 	let selectionMade = false;
 
+	//Store for baby names that are pulled from the API
 	let babyNames = [];
 
-	let likedNames = [];
+	//Make the likedNames array a writable store that will update as it is written in with handleLikedNames function
+	let likedNames = writable([]);
 
+	//Set index to display baby names one at a time
 	let currentBabyNameIndex = 0
 
+	//API Ninjas API Key
 	let apiKey = '2LP0z26UuHCOic1ZWZ/x5w==7WiMg5Quumm85tl6';
 
+	//Setting not to show cards until all baby name settings are made and the API call has been made
 	let showCards = false
 
+	//Prompt to let user gather more baby names once they like or dislike 10th name
 	let showMoreNamesPrompt = false
 
+	//Set loading state when API data is being gathered so user isn't waiting with no indication of things running
 	let isLoading = false
 
-	let likedNamesContainer = false
+	//Set the likedNamesArray to be subscribed to likedNames so it will dynamically update as the LikedNames array is updated
+	let likedNamesArray = []
+	likedNames.subscribe(value => {
+		likedNamesArray = value
+	})
 
-
-	function displayLikedNames() {
-		
-		likedNamesContainer = true
-
-	}
-
+	//Function to get baby names for the user based on the settings they set
 	async function getBabyNames() {
 		try {
 			isLoading = true // Set loading screen while API calls are made
@@ -68,6 +88,7 @@
 	}
 }
 
+//Async function that works off the getBabyNames function to also get the name definition and celebrities with the same name based off of what it is fed from the previous function
 async function getNameDefinition() {
 	try {
 		for (let i=0; i < babyNames.length; i++) {
@@ -105,27 +126,31 @@ async function getNameDefinition() {
 	}	
 } 
 
-
+	//Function for UI settings
 	function setFilterSettings() {
 		filterSettings = true;
 		initialSettings = false
 	}
 
+	//Function for UI settings
 	function isSelectionMade() {
 		selectionMade = babyNameType !== '';
 	}
 
+	//Function to display baby names on UI
 	function displayBabyNames() {
 		filterSettings = false
 		showCards = true
 	}
 
+	//Function to be called when a user clicks to like a baby name, store the name in liked names array
 	function handleLikedBabyNames() {
-		likedNames.push(babyNames[currentBabyNameIndex]);
+		likedNames.update(names => [...names, babyNames[currentBabyNameIndex]])
 		console.log(likedNames)
 		nextName()
 	}
 
+	//Function to help display baby names one at a time
 	function nextName() {
 		if(currentBabyNameIndex < babyNames.length - 1) {
 			currentBabyNameIndex++
@@ -138,10 +163,12 @@ async function getNameDefinition() {
 		}
 	}
 
+	//Function to be called when user dislikes a name
 	function handleDislikedBabyNames() {
 		nextName()
 	}
 
+	//Function to grab fresh names when user runs out and wants more
 	async function loadMoreBabyNames() {
 		showMoreNamesPrompt = false
 		await getBabyNames()
@@ -245,16 +272,23 @@ async function getNameDefinition() {
 		{#if showMoreNamesPrompt}
 		<div class="text-center my-4">
 			<button class="btn variant-filled hover:animate-pulse" on:click={loadMoreBabyNames}>See More Baby Names</button>
-			<button class="btn variant-secondary hover:animate-pulse" on:click={displayLikedNames}>See Liked Baby Names</button>
 		</div>
 	{/if}
+	</div>
 
-	{#if likedNamesContainer}
-	<h2>Liked Baby Names:</h2>
-		{#each likedNames as likedName}
-			<li>{likedName.name}</li>
-		{/each}
-		
-	{/if}
+	<div class="absolute bottom-40 right-40">
+			<button class="btn variant-filled" use:popup={popupFeatured}>Show Liked Names</button>
+			<div class="card p-4 w-72 shadow-xl" data-popup="popupFeatured">
+				<div>
+					<h2>My Baby Names:</h2>
+					<ul>
+						{#each likedNamesArray as likedName}
+							<li>{likedName.name}</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="arrow variant-filled-primary" />
+			</div>
+					
 	</div>
 </div>

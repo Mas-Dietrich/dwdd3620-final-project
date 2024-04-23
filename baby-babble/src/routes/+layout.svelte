@@ -9,6 +9,11 @@
 	import css from 'highlight.js/lib/languages/css';
 	import javascript from 'highlight.js/lib/languages/javascript';
 	import typescript from 'highlight.js/lib/languages/typescript';
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+
+	import { storePopup } from '@skeletonlabs/skeleton';
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+			
 
 	hljs.registerLanguage('xml', xml); // for HTML
 	hljs.registerLanguage('css', css);
