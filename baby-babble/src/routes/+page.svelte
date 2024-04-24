@@ -174,6 +174,11 @@ async function getNameDefinition() {
 		await getBabyNames()
 	}
 
+	//Function to remove liked baby names from array
+    function removeLikedName(index) {
+        likedNames.update(names => names.filter((_, i) => i !== index));
+    }
+
 </script>
 
 <div class="flex flex-col justify-center h-full items-center p-12">
@@ -280,12 +285,16 @@ async function getNameDefinition() {
 			<button class="btn variant-filled" use:popup={popupFeatured}>Show Liked Names</button>
 			<div class="card p-4 w-72 shadow-xl" data-popup="popupFeatured">
 				<div>
-					<h2>My Baby Names:</h2>
-					<ul>
-						{#each likedNamesArray as likedName}
-							<li>{likedName.name}</li>
+					<h2 class="text-3xl italic">My Baby Names:</h2>
+					<ol>
+						{#each likedNamesArray as likedName, index}
+							<div class="flex flex-row border-b-2 border-gray-300">
+								<li class="text-xl py-4">{likedName.name}</li>
+								<button class="mx-2">{@html icons.edit}</button>
+								<button on:click={() => removeLikedName(index)}>{@html icons.trash}</button>
+							</div>
 						{/each}
-					</ul>
+					</ol>
 				</div>
 				<div class="arrow variant-filled-primary" />
 			</div>
