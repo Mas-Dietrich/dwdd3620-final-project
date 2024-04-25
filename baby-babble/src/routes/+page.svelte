@@ -4,12 +4,17 @@
 	import {ProgressBar} from '@skeletonlabs/skeleton';
 	import { popup } from '@skeletonlabs/skeleton';
 	import { writable } from 'svelte/store';
+	import { getModalStore } from '@skeletonlabs/skeleton';
+	import Layout from './+layout.svelte';
+	
+
 
 	//Create Popup instance
 	const popupFeatured = {
 		event: 'click',
 		target: 'popupFeatured',
-		placement: 'top'
+		placement: 'top',
+		closeQuery: '#will-close'
 	}
 	
 	//Variable for start screen
@@ -179,6 +184,55 @@ async function getNameDefinition() {
         likedNames.update(names => names.filter((_, i) => i !== index));
     }
 
+// 	//Initialize ModalStore
+// 	const modalStore = getModalStore()
+
+// 	//Modal will pop up for user to dynamically edit the baby name and confirm or cancel edit
+// 	function editLikedName(index) {
+//     const originalName = likedNamesArray[index].name;
+
+//     let editedName = originalName; // Initialize with the original name
+
+//     modalStore.trigger({
+//         type: 'confirm',
+//         title: `Edit Baby Name ${originalName}`,
+//         body: `
+//             <input type="text" class="input w-full" bind:value={editedName} />
+//         `,
+//         response: (confirm) => {
+//             if (confirm) {
+//                 // Update the liked names array with the edited name
+//                 const updatedNames = [...likedNamesArray];
+//                 updatedNames[index].name = editedName;
+//                 likedNames.set(updatedNames);
+//             }
+//         }
+//     });
+// }
+	//Functionality to edit a liked name
+	let originalName = '';
+	let editingIndex = null
+	function startEdit(index) {
+		editingIndex = index
+		originalName = likedNamesArray[index].name
+	}
+	function cancelEditing() {
+		if(editingIndex !== null) {
+			const updatedNames = [...likedNamesArray]
+			updatedNames[editingIndex].name = originalName
+			likedNames.set(updatedNames)
+			editingIndex = null
+			originalName = ''
+		}
+	}
+	function saveEdit(index, newName) {
+		const updatedNames = [...likedNamesArray]
+		updatedNames[index].name = newName
+		likedNames.set(updatedNames)
+		editingIndex = null
+		originalName = ''
+	}
+
 </script>
 
 <div class="flex flex-col justify-center h-full items-center p-12">
@@ -289,12 +343,19 @@ async function getNameDefinition() {
 					<ol>
 						{#each likedNamesArray as likedName, index}
 							<div class="flex flex-row border-b-2 border-gray-300">
-								<li class="text-xl py-4">{likedName.name}</li>
-								<button class="mx-2">{@html icons.edit}</button>
-								<button on:click={() => removeLikedName(index)}>{@html icons.trash}</button>
+								{#if editingIndex === index}
+									<input type="text" class="text-xl my-4 input" bind:value={likedName.name} />
+									<button class="mx-2" on:click={() => saveEdit(index, likedName.name)}>Save</button>
+									<button class="btn mx-2" on:click={cancelEditing}>Cancel</button>
+								{:else}
+									<li class="text-xl py-4">{likedName.name}</li>
+									<button id="wont-close" on:click={() => startEdit(index)}>{@html icons.edit}</button>
+									<button id="wont-close" on:click={() => removeLikedName(index)}>{@html icons.trash}</button>
+								{/if}
 							</div>
 						{/each}
 					</ol>
+					<button id="will-close" class="my-4 hover:text-red-300">Close</button>
 				</div>
 				<div class="arrow variant-filled-primary" />
 			</div>
