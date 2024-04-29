@@ -148,11 +148,15 @@ async function getNameDefinition() {
 		showCards = true
 	}
 
-	//Function to be called when a user clicks to like a baby name, store the name in liked names array
+	//Function to be called when a user clicks to like a baby name, store the name and gender in liked names array
 	function handleLikedBabyNames() {
-		likedNames.update(names => [...names, babyNames[currentBabyNameIndex]])
+		const likedName = {
+			name: babyNames[currentBabyNameIndex].name,
+			gender: babyNames[currentBabyNameIndex].gender
+		}
+		likedNames.update(names => [...names, likedName]);
 		console.log(likedNames)
-		nextName()
+		nextName();
 	}
 
 	//Function to help display baby names one at a time
@@ -233,6 +237,27 @@ async function getNameDefinition() {
 		originalName = ''
 	}
 
+	    // Define a boolean flag to toggle sorting order
+		let ascendingOrder = true;
+
+		// Function to sort liked names alphabetically
+		function sortLikedNames() {
+			// Toggle the sorting order flag
+			ascendingOrder = !ascendingOrder;
+
+			// Sort the liked names array based on the sorting order
+			likedNames.update(names => {
+				const sortedNames = [...names].sort((a, b) => {
+					if (ascendingOrder) {
+						return a.name.localeCompare(b.name);
+					} else {
+						return b.name.localeCompare(a.name);
+					}
+				});
+				return sortedNames;
+			});
+		}
+
 </script>
 
 <div class="flex flex-col justify-center h-full items-center p-12">
@@ -287,7 +312,7 @@ async function getNameDefinition() {
 
 	<div class="flex justify-center flex-col w-3/4">
 		{#if !initialSettings && !filterSettings && !showMoreNamesPrompt}
-				<div class="card p-8 my-8 relative">
+				<div class="card p-8 my-8 {babyNameType === 'boy' ? 'variant-ghost-secondary' : babyNameType === 'neutral' ? 'variant-ghost-tertiary' : 'variant-ghost-primary'}">
 					<h2 class="text-3xl font-bold text-center">{babyNames[currentBabyNameIndex].name} {lastName}</h2>
 					<div class="w-3/4 mx-auto my-4">
 						<Accordion>
@@ -319,13 +344,13 @@ async function getNameDefinition() {
 							</AccordionItem>
 						</Accordion>
 					</div>
-					<div class="absolute left-[5%] bottom-[50%] text-red-600 text-xl cursor-pointer">
-						<button class="btn" on:click={handleDislikedBabyNames}>X</button>
-					</div>
+				</div>
+				<div class="absolute left-[5%] bottom-[50%] text-red-600 text-xl cursor-pointer">
+					<button class="btn" on:click={handleDislikedBabyNames}>X</button>
+				</div>
 
-					<div class="absolute bottom-[50%] right-[5%] text-green-600 text-xl cursor-pointer">
-						<button class="btn"  on:click={handleLikedBabyNames}>✅</button>
-					</div>
+				<div class="absolute bottom-[50%] right-[5%] text-green-600 text-xl cursor-pointer">
+					<button class="btn"  on:click={handleLikedBabyNames}>✅</button>
 				</div>
 		{/if}
 		{#if showMoreNamesPrompt}
@@ -340,6 +365,9 @@ async function getNameDefinition() {
 			<div class="card p-4 w-72 shadow-xl" data-popup="popupFeatured">
 				<div>
 					<h2 class="text-3xl italic">My Baby Names:</h2>
+					{#if likedNamesArray.length >= 2}
+						<button class= "btn variant-filled" on:click={sortLikedNames}>Sort Alphabetically</button>
+					{/if}
 					<ol>
 						{#each likedNamesArray as likedName, index}
 							<div class="flex flex-row border-b-2 border-gray-300">
@@ -348,9 +376,13 @@ async function getNameDefinition() {
 									<button class="mx-2" on:click={() => saveEdit(index, likedName.name)}>Save</button>
 									<button class="btn mx-2" on:click={cancelEditing}>Cancel</button>
 								{:else}
-									<li class="text-xl py-4">{likedName.name}</li>
-									<button id="wont-close" on:click={() => startEdit(index)}>{@html icons.edit}</button>
-									<button id="wont-close" on:click={() => removeLikedName(index)}>{@html icons.trash}</button>
+									<div class="flex w-full justify-evenly my-auto">
+										<li class="text-xl py-4">{likedName.name}</li>
+										<p class="py-4 text-sm">{babyNameType}</p>
+										<button id="wont-close" on:click={() => startEdit(index)}>{@html icons.edit}</button>
+										<button id="wont-close" on:click={() => removeLikedName(index)}>{@html icons.trash}</button>
+									</div>
+
 								{/if}
 							</div>
 						{/each}
