@@ -345,12 +345,12 @@ async function getNameDefinition() {
 						</Accordion>
 					</div>
 				</div>
-				<div class="absolute left-[5%] bottom-[50%] text-red-600 text-xl cursor-pointer">
-					<button class="btn" on:click={handleDislikedBabyNames}>X</button>
+				<div class="absolute left-[5%] bottom-[50%] text-xl cursor-pointer">
+					<button class="btn text-3xl" on:click={handleDislikedBabyNames}>{@html icons.left}</button>
 				</div>
 
-				<div class="absolute bottom-[50%] right-[5%] text-green-600 text-xl cursor-pointer">
-					<button class="btn"  on:click={handleLikedBabyNames}>✅</button>
+				<div class="absolute bottom-[50%] right-[5%] text-xl cursor-pointer">
+					<button class="btn text-3xl"  on:click={handleLikedBabyNames}>{@html icons.right}</button>
 				</div>
 		{/if}
 		{#if showMoreNamesPrompt}
@@ -366,7 +366,7 @@ async function getNameDefinition() {
 				<div>
 					<h2 class="text-3xl italic">My Baby Names:</h2>
 					{#if likedNamesArray.length >= 2}
-						<button class= "btn variant-filled" on:click={sortLikedNames}>Sort Alphabetically</button>
+						<button class= "btn variant-filled my-4 text-md" on:click={sortLikedNames}>Sort Alphabetically</button>
 					{/if}
 					<ol>
 						{#each likedNamesArray as likedName, index}
